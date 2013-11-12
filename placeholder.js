@@ -3,7 +3,8 @@
   var defaultConfig;
 
   defaultConfig = {
-    isValue: false
+    isValue: false,
+    style: {}
   };
 
   $.fn.placeholder = function(opts) {
@@ -36,7 +37,7 @@
         });
       } else {
         inps.each(function() {
-          var elem, elementLabel, height, left, lh, pid, pl, placeholder, pt, top, width;
+          var cssObj, elem, elementLabel, height, left, lh, pid, pl, placeholder, pt, top, width;
           elem = $(this);
           placeholder = elem.attr('placeholder');
           pid = elem.attr('id');
@@ -51,7 +52,7 @@
           pl = elem.css('padding-left');
           pt = elem.css('padding-top');
           lh = elem[0].nodeName.toLowerCase() === 'textarea' ? '' : height;
-          elementLabel = $("<small for=\"" + pid + "\"></small>").css({
+          cssObj = $.extend({}, {
             position: "absolute",
             top: top,
             left: left,
@@ -64,9 +65,16 @@
             paddingTop: pt,
             width: width,
             height: height,
-            lineHeight: lh + 'px'
-          }).insertBefore(elem);
-          elementLabel.text(placeholder);
+            lineHeight: lh + 'px',
+            zIndex: 0
+          }, opts.style);
+          elementLabel = $("<small for=\"" + pid + "\"></small>").css(cssObj).insertBefore(elem);
+          if (!$.trim(elem.val())) {
+            elementLabel.text(placeholder);
+          }
+          elementLabel.click(function() {
+            return elem.trigger('focus');
+          });
           elem.bind({
             "focus": function() {
               elementLabel.html("");
