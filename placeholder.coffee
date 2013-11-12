@@ -1,6 +1,6 @@
 defaultConfig = 
 	isValue: false
-
+	style: {}
 
 $.fn.placeholder = (opts) ->
 	opts = $ {}, defaultConfig, opts
@@ -49,8 +49,7 @@ $.fn.placeholder = (opts) ->
 				pl = elem.css 'padding-left'
 				pt = elem.css 'padding-top'
 				lh = if elem[0].nodeName.toLowerCase() is 'textarea' then '' else height
-				# 状态初始化
-				elementLabel = $("<small for=\"#{pid}\"></small>").css(
+				cssObj = $.extend {}, 
 					position: "absolute"
 					top: top
 					left: left
@@ -64,8 +63,14 @@ $.fn.placeholder = (opts) ->
 					width: width
 					height: height
 					lineHeight: lh + 'px'
-				).insertBefore elem
-				elementLabel.text placeholder
+					zIndex: 0
+				, opts.style
+				# 状态初始化
+				elementLabel = $("<small for=\"#{pid}\"></small>").css(cssObj).insertBefore elem
+				if not $.trim elem.val()
+					elementLabel.text placeholder
+				elementLabel.click ->
+					elem.trigger 'focus'
 				elem.bind
 					"focus": ->
 						elementLabel.html ""
